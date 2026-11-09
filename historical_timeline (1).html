@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronologia Storica • Timeline (753 a.C. — 1918)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        cardBg: '#111827',
+                        cardBorder: '#1f2937',
+                        accentBlue: '#3b82f6',
+                        accentGlow: '#60a5fa',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-darkBg min-h-screen text-gray-100 flex flex-col selection:bg-blue-600 selection:text-white">
+
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-darkBg/80 backdrop-blur-md sticky top-0 z-50 py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-900 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-white">Cronologia Storica • Mappa d'Italia</h1>
+                <p class="text-xs text-gray-400">Dall'Antichità alla Prima Guerra Mondiale (753 a.C. — 1918)</p>
+            </div>
+        </div>
+
+        <!-- View mode switcher & search -->
+        <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+            <div class="flex bg-cardBg border border-cardBorder rounded-xl p-1 w-full sm:w-auto">
+                <button id="btnTimelineView" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white transition-all shadow-md">
+                    📜 Cronologia
+                </button>
+                <button id="btnMapView" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all">
+                    🗺 Mappa Interattiva
+                </button>
+            </div>
+
+            <div class="relative w-full sm:w-64">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </span>
+                <input type="text" id="searchInput" placeholder="Cerca eventi, date, luoghi..." class="w-full pl-9 pr-4 py-2 bg-cardBg border border-cardBorder rounded-xl text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Filters Sidebar -->
+        <aside class="w-full lg:w-72 flex-shrink-0 space-y-6">
+            <div class="bg-cardBg border border-cardBorder rounded-2xl p-5 sticky top-24 shadow-xl">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">Filtra per epoca</h2>
+                <div class="flex flex-col space-y-2" id="categoryFilters">
+                    <button data-category="all" class="filter-btn text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all bg-blue-600/20 text-blue-400 border border-blue-500/30">
+                        Tutti gli eventi
+                    </button>
+                    <button data-category="antichita" class="filter-btn text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-gray-300 hover:bg-gray-800/60 border border-transparent">
+                        🏛 Antichità
+                    </button>
+                    <button data-category="medioevo" class="filter-btn text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-gray-300 hover:bg-gray-800/60 border border-transparent">
+                        ⚔ Medioevo
+                    </button>
+                    <button data-category="rinascimento" class="filter-btn text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-gray-300 hover:bg-gray-800/60 border border-transparent">
+                        📜 Rinascimento ed Età Moderna
+                    </button>
+                    <button data-category="risorgimento" class="filter-btn text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-gray-300 hover:bg-gray-800/60 border border-transparent">
+                        🇮🇹 Illuminismo e Risorgimento
+                    </button>
+                    <button data-category="novecento" class="filter-btn text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-gray-300 hover:bg-gray-800/60 border border-transparent">
+                        🌍 Novecento e 1ª G.M.
+                    </button>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-800 text-xs text-gray-500 space-y-2">
+                    <p>💡 Clicca su qualsiasi scheda o città sulla mappa per esplorare la storia.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area (Timeline or Map) -->
+        <section class="flex-1">
+            <!-- Timeline View Container -->
+            <div id="timelineViewContainer">
+                <div id="timelineContainer" class="relative border-l-2 border-blue-500/20 ml-3 md:ml-6 pl-6 md:pl-8 space-y-8">
+                    <!-- Timeline items injected via JS -->
+                </div>
+            </div>
+
+            <!-- Interactive Map View Container -->
+            <div id="mapViewContainer" class="hidden space-y-6">
+                <div class="bg-cardBg border border-cardBorder rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Mappa Storica Interattiva</h2>
+                            <p class="text-xs text-gray-400">Clicca sui luoghi chiave della penisola e del Mediterraneo per scoprire gli eventi collegati</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2" id="locationChips">
+                            <!-- Location filter chips injected via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Visual Stylized Map Area -->
+                    <div class="relative w-full h-[450px] bg-darkBg/80 border border-cardBorder rounded-xl overflow-hidden flex items-center justify-center p-4">
+                        <!-- Stylized background grid pattern -->
+                        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f293715_1px,transparent_1px),linear-gradient(to_bottom,#1f293715_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
+                        
+                        <!-- Stylized Italy Map SVG Shape Background -->
+                        <svg class="absolute w-full h-full opacity-15 pointer-events-none text-blue-500" viewBox="0 0 600 600" fill="currentColor">
+                            <path d="M280,120 Q310,130 330,150 T360,200 Q380,240 370,280 T350,340 Q320,380 300,420 T280,480 Q260,520 240,500 T260,440 Q280,380 290,340 T310,260 Q300,200 280,160 Z" />
+                            <path d="M200,100 Q240,110 270,140 T290,200 Q270,230 220,210 T180,150 Z" opacity="0.7"/>
+                        </svg>
+
+                        <!-- Interactive Map Pins Container -->
+                        <div id="mapPinsArea" class="absolute inset-w-full inset-h-full w-full h-full relative">
+                            <!-- Pins injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Event Cards Grid -->
+                <div>
+                    <h3 id="selectedLocationTitle" class="text-lg font-bold text-white mb-4">Eventi per località: Tutti</h3>
+                    <div id="locationCardsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Location event cards injected via JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Empty state -->
+            <div id="noResults" class="hidden text-center py-16">
+                <p class="text-gray-400 text-lg">Nessun evento trovato. Prova a modificare la ricerca.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Detailed Event -->
+    <div id="eventModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div id="modalContent" class="bg-cardBg border border-cardBorder rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl relative transform scale-95 transition-transform duration-300">
+            <div class="h-48 w-full relative overflow-hidden bg-gray-900">
+                <img id="modalImage" src="" alt="Evento storico" class="w-full h-full object-cover opacity-80" onerror="this.src='https://placehold.co/600x300/111827/3b82f6?text=Cronologia+Storica'">
+                <div class="absolute inset-0 bg-gradient-to-t from-cardBg via-cardBg/40 to-transparent"></div>
+                <button id="closeModal" class="absolute top-4 right-4 bg-black/50 backdrop-blur-md text-gray-300 hover:text-white p-2 rounded-xl hover:bg-black/70 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 md:p-8 pt-0 relative -mt-10">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <span id="modalDate" class="px-3 py-1 bg-blue-600 text-white font-semibold text-xs rounded-full shadow-md"></span>
+                    <span id="modalLocationBadge" class="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 font-semibold text-xs rounded-full"></span>
+                    <span id="modalCategory" class="text-xs uppercase tracking-wider text-gray-400 font-medium ml-auto"></span>
+                </div>
+                <h2 id="modalTitle" class="text-xl md:text-2xl font-bold text-white mb-3"></h2>
+                <p id="modalDescription" class="text-gray-300 text-sm md:text-base leading-relaxed mb-6"></p>
+                <div class="flex justify-end">
+                    <button id="closeModalBtn" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition-colors shadow-lg shadow-blue-600/20">
+                        Chiudi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-6 text-center text-xs text-gray-500 bg-darkBg">
+        <p>Timeline storica interattiva con mappa d'Italia • Basata sugli appunti scolastici</p>
+    </footer>
+
+    <!-- JavaScript Data and Logic -->
+    <script>
+        const timelineData = [
+            {
+                id: 1,
+                date: "753 a.C.",
+                category: "antichita",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "Fondazione di Roma",
+                description: "Inizio dell'Età regia di Roma, civiltà etrusca e sviluppo della Magna Grecia nella penisola italiana.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Roma+Antica"
+            },
+            {
+                id: 2,
+                date: "300 a.C.",
+                category: "antichita",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "Riforme repubblicane e consolidamento",
+                description: "Periodo di importanti trasformazioni politiche nell'Antica Roma, leggi e consolidamento territoriale.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Repubblica+Romana"
+            },
+            {
+                id: 3,
+                date: "V secolo",
+                category: "antichita",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "Caduta dell'Impero romano d'Occidente",
+                description: "Segna la fine dell'età antica e l'inizio dell'Alto Medioevo, accompagnata dalle invasioni barbariche.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Caduta+Roma"
+            },
+            {
+                id: 4,
+                date: "1054",
+                category: "medioevo",
+                location: "Costantinopoli",
+                locationCoords: { x: 88, y: 48 },
+                title: "Scisma d'Oriente",
+                description: "Divisione definitiva tra la Chiesa cattolica romana (Occidente) e la Chiesa ortodossa (Oriente).",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Scisma+dOriente"
+            },
+            {
+                id: 5,
+                date: "1096",
+                category: "medioevo",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "1ª Crociata",
+                description: "Inizio delle spedizioni militari in Terra Santa bandite da papa Urbano II.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Prima+Crociata"
+            },
+            {
+                id: 6,
+                date: "1202 — 1204",
+                category: "medioevo",
+                location: "Costantinopoli",
+                locationCoords: { x: 88, y: 48 },
+                title: "4ª Crociata e Assedio di Costantinopoli",
+                description: "Spedizione crociata deviata che portò alla conquista e al saccheggio di Costantinopoli.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Costantinopoli"
+            },
+            {
+                id: 7,
+                date: "1309 — 1377",
+                category: "medioevo",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "Cattività avignonese",
+                description: "Periodo in cui la sede del papato fu trasferita da Roma ad Avignone, sotto l'influenza della monarchia francese.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Cattivita+Avignonese"
+            },
+            {
+                id: 8,
+                date: "1378 — 1417",
+                category: "medioevo",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "Grande Scisma d'Occidente",
+                description: "Crisi religiosa all'interno della Chiesa cattolica con la contemporanea presenza di più papi pretendenti al soglio pontificio.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Scisma+Occidente"
+            },
+            {
+                id: 9,
+                date: "1453",
+                category: "rinascimento",
+                location: "Costantinopoli",
+                locationCoords: { x: 88, y: 48 },
+                title: "Caduta di Costantinopoli",
+                description: "Conquista della città da parte dell'Impero Ottomano, fine dell'Impero Romano d'Oriente e conclusione della Guerra dei cent'anni.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Impero+Ottomano"
+            },
+            {
+                id: 10,
+                date: "1455",
+                category: "rinascimento",
+                location: "Germania / Europa",
+                locationCoords: { x: 35, y: 25 },
+                title: "Stampa a caratteri mobili",
+                description: "Invenzione del torchio tipografico da parte di Johannes Gutenberg, rivoluzione culturale in Europa.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Stampa+Gutenberg"
+            },
+            {
+                id: 11,
+                date: "1494",
+                category: "rinascimento",
+                location: "Milano",
+                locationCoords: { x: 38, y: 35 },
+                title: "Guerre d'Italia (1ª discesa di Carlo VIII)",
+                description: "Inizio delle guerre d'Italia e della lunga stagione di egemonia delle potenze straniere nella penisola.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Guerre+dItalia"
+            },
+            {
+                id: 12,
+                date: "1517",
+                category: "rinascimento",
+                location: "Germania",
+                locationCoords: { x: 35, y: 25 },
+                title: "Inizio della Riforma",
+                description: "Martin Lutero affigge le 95 tesi a Wittenberg, dando inizio alla Riforma protestante e alla spaccatura religiosa.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Riforma+Protestante"
+            },
+            {
+                id: 13,
+                date: "1527",
+                category: "rinascimento",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "Sacco di Roma",
+                description: "Devastazione e saccheggio di Roma ad opera dei lanzichenecchi al servizio dell'imperatore Carlo V.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Sacco+di+Roma"
+            },
+            {
+                id: 14,
+                date: "1571",
+                category: "rinascimento",
+                location: "Lepanto",
+                locationCoords: { x: 78, y: 75 },
+                title: "Battaglia di Lepanto",
+                description: "Storica vittoria navale della flotta della Lega Santa contro l'Impero Ottomano nel Mediterraneo.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Battaglia+di+Lepanto"
+            },
+            {
+                id: 15,
+                date: "1588",
+                category: "rinascimento",
+                location: "Inghilterra",
+                locationCoords: { x: 20, y: 20 },
+                title: "Invincibile Armata",
+                description: "Sconfitta della flotta spagnola da parte della marina inglese, segnando il declino della potenza navale di Filippo II.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Invincibile+Armata"
+            },
+            {
+                id: 16,
+                date: "1700 — 1799",
+                category: "risorgimento",
+                location: "Europa / Italia",
+                locationCoords: { x: 45, y: 40 },
+                title: "Illuminismo",
+                description: "Movimento culturale e filosofico del Settecento basato sulla ragione che prepara il terreno alle grandi rivoluzioni.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Illuminismo"
+            },
+            {
+                id: 17,
+                date: "1789",
+                category: "risorgimento",
+                location: "Parigi (Francia)",
+                locationCoords: { x: 25, y: 30 },
+                title: "Rivoluzione Francese",
+                description: "Scoppio della rivoluzione in Francia e presa della Bastiglia, crollo dell'Ancien Régime.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Rivoluzione+Francese"
+            },
+            {
+                id: 18,
+                date: "1796",
+                category: "risorgimento",
+                location: "Milano / Lombardia",
+                locationCoords: { x: 38, y: 35 },
+                title: "Campagna d'Italia",
+                description: "Prima discesa di Napoleone Bonaparte in Italia e nascita delle prime repubbliche giacobine.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Campagna+di+Napoleone"
+            },
+            {
+                id: 19,
+                date: "1799",
+                category: "risorgimento",
+                location: "Roma / Napoli",
+                locationCoords: { x: 55, y: 72 },
+                title: "Caduta delle Repubbliche",
+                description: "Fine delle esperienze repubblicane in Italia e sconfitta dei movimenti patriottici giacobini.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Repubbliche+Giacobine"
+            },
+            {
+                id: 20,
+                date: "1800",
+                category: "risorgimento",
+                location: "Marengo (Piemonte)",
+                locationCoords: { x: 33, y: 42 },
+                title: "Battaglia di Marengo",
+                description: "Seconda campagna napoleonica in Italia e vittoria decisiva delle truppe francesi contro gli austriaci.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Battaglia+di+Marengo"
+            },
+            {
+                id: 21,
+                date: "1804",
+                category: "risorgimento",
+                location: "Parigi (Francia)",
+                locationCoords: { x: 25, y: 30 },
+                title: "Incoronazione di Napoleone",
+                description: "Napoleone Bonaparte viene incoronato Imperatore dei Francesi a Notre-Dame.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Incoronazione+Napoleone"
+            },
+            {
+                id: 22,
+                date: "1814 — 1815",
+                category: "risorgimento",
+                location: "Vienna (Austria)",
+                locationCoords: { x: 48, y: 28 },
+                title: "Congresso di Vienna",
+                description: "Inizio dell'Età della Restaurazione con la ridefinizione dell'assetto geopolitico dell'Europa.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Congresso+di+Vienna"
+            },
+            {
+                id: 23,
+                date: "1820 — 1821",
+                category: "risorgimento",
+                location: "Torino / Napoli",
+                locationCoords: { x: 30, y: 45 },
+                title: "Moti rivoluzionari (1820-21)",
+                description: "Prime sollevazioni insurrezionali e cospirazioni dei carbonari in Piemonte, Napoli e Lombardia.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Moti+del+1820"
+            },
+            {
+                id: 24,
+                date: "1830 — 1831",
+                category: "risorgimento",
+                location: "Italia Centrale",
+                locationCoords: { x: 45, y: 55 },
+                title: "Moti del '30-'31",
+                description: "Nuova ondata di moti rivoluzionari nell'Italia centrale e settentrionale contro il potere costituito.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Moti+del+1830"
+            },
+            {
+                id: 25,
+                date: "1848",
+                category: "risorgimento",
+                location: "Milano",
+                locationCoords: { x: 38, y: 35 },
+                title: "1ª Guerra d'Indipendenza e 5 giornate di Milano",
+                description: "Primavera dei popoli. 18-24 marzo: eroica rivolta delle 5 giornate di Milano contro gli austriaci e concessione dello Statuto Albertino.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=5+Giornate+di+Milano"
+            },
+            {
+                id: 26,
+                date: "1849",
+                category: "risorgimento",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "Repubblica Romana",
+                description: "Proclamazione ed eroica difesa della Repubblica Romana guidata da Mazzini e Garibaldi.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Repubblica+Romana+1849"
+            },
+            {
+                id: 27,
+                date: "1859",
+                category: "risorgimento",
+                location: "Solferino / San Martino",
+                locationCoords: { x: 42, y: 33 },
+                title: "2ª Guerra d'Indipendenza",
+                description: "Alleanza franco-piemontese contro l'Austria, battaglie decisive di Solferino e San Martino.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Solferino+San+Martino"
+            },
+            {
+                id: 28,
+                date: "1860",
+                category: "risorgimento",
+                location: "Quarto / Sicilia / Napoli",
+                locationCoords: { x: 65, y: 85 },
+                title: "Spedizione dei Mille",
+                description: "Garibaldi e i volontari partono da Quarto e conquistano il Regno delle Due Sicilie, consegnandoli a Vittorio Emanuele II.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Spedizione+dei+Mille"
+            },
+            {
+                id: 29,
+                date: "1861",
+                category: "risorgimento",
+                location: "Torino",
+                locationCoords: { x: 30, y: 45 },
+                title: "Proclamazione del Regno d'Italia",
+                description: "Nascita ufficiale dello Stato unitario italiano con capitale Torino.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Unita+dItalia"
+            },
+            {
+                id: 30,
+                date: "1866",
+                category: "risorgimento",
+                location: "Veneto",
+                locationCoords: { x: 46, y: 36 },
+                title: "3ª Guerra d'Indipendenza",
+                description: "Partecipazione italiana al conflitto austro-prussiano e annessione del Veneto al Regno d'Italia.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Annessione+Veneto"
+            },
+            {
+                id: 31,
+                date: "1870",
+                category: "risorgimento",
+                location: "Roma",
+                locationCoords: { x: 52, y: 62 },
+                title: "Breccia di Porta Pia",
+                description: "Le truppe italiane entrano a Roma attraverso la breccia di Porta Pia, ponendo fine al potere temporale dei papi e facendo di Roma la capitale.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Porta+Pia+Roma"
+            },
+            {
+                id: 32,
+                date: "1915 — 1918",
+                category: "novecento",
+                location: "Trentino / Friuli / Fronte",
+                locationCoords: { x: 48, y: 25 },
+                title: "1ª Guerra Mondiale",
+                description: "Partecipazione dell'Italia al primo conflitto mondiale fino alla vittoria e alla fine delle ostilità.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Prima+Guerra+Mondiale"
+            },
+            {
+                id: 33,
+                date: "1918",
+                category: "novecento",
+                location: "Trento / Trieste",
+                locationCoords: { x: 50, y: 27 },
+                title: "Annessione di Trento e Trieste",
+                description: "Completamento dell'unità nazionale con l'annessione di Trento, Trieste e delle terre irridente.",
+                image: "https://placehold.co/600x300/111827/3b82f6?text=Trento+e+Trieste"
+            }
+        ];
+
+        // Locations for the map pins
+        const locationsList = [
+            "Tutti", "Roma", "Milano", "Costantinopoli", "Torino", "Venezia", "Parigi (Francia)", "Germania", "Lepanto"
+        ];
+
+        let currentView = 'timeline'; // 'timeline' or 'map'
+        let currentCategory = 'all';
+        let currentLocation = 'Tutti';
+        let currentSearch = '';
+
+        function getCategoryLabel(cat) {
+            switch(cat) {
+                case 'antichita': return 'Antichità';
+                case 'medioevo': return 'Medioevo';
+                case 'rinascimento': return 'Rinascimento';
+                case 'risorgimento': return 'Risorgimento';
+                case 'novecento': return 'Novecento';
+                default: return 'Storia';
+            }
+        }
+
+        // Render Timeline View
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            const noResults = document.getElementById('noResults');
+            container.innerHTML = '';
+
+            const filtered = timelineData.filter(item => {
+                const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+                const matchesLocation = currentLocation === 'Tutti' || item.location.toLowerCase().includes(currentLocation.toLowerCase());
+                const matchesSearch = currentSearch === '' || 
+                    item.date.toLowerCase().includes(currentSearch) ||
+                    item.title.toLowerCase().includes(currentSearch) ||
+                    item.location.toLowerCase().includes(currentSearch) ||
+                    item.description.toLowerCase().includes(currentSearch);
+                return matchesCategory && matchesLocation && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            filtered.forEach((item) => {
+                const node = document.createElement('div');
+                node.className = 'relative group cursor-pointer';
+                
+                node.innerHTML = `
+                    <div class="absolute -left-[33px] md:-left-[41px] top-1.5 w-5 h-5 rounded-full bg-blue-600 border-4 border-darkBg group-hover:scale-125 group-hover:bg-blue-400 transition-all duration-300 shadow-md shadow-blue-500/50"></div>
+                    
+                    <div class="bg-cardBg border border-cardBorder rounded-2xl p-6 transition-all duration-300 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-900/20 group-hover:-translate-y-1 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="w-full md:w-40 h-28 rounded-xl overflow-hidden flex-shrink-0 bg-gray-900">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x300/111827/3b82f6?text=Storia'">
+                        </div>
+                        <div class="flex-1 w-full">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                <span class="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 font-semibold text-xs rounded-full">
+                                    ${item.date}
+                                </span>
+                                <span class="px-2.5 py-0.5 bg-gray-800 text-gray-300 font-medium text-xs rounded-lg">
+                                    📍 ${item.location}
+                                </span>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                                ${item.title}
+                            </h3>
+                            <p class="text-sm text-gray-300 line-clamp-2">
+                                ${item.description}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                node.addEventListener('click', () => openModal(item));
+                container.appendChild(node);
+            });
+        }
+
+        // Render Map View (Pins + Cards)
+        function renderMapAndCards() {
+            const pinsArea = document.getElementById('mapPinsArea');
+            const chipsContainer = document.getElementById('locationChips');
+            const cardsGrid = document.getElementById('locationCardsGrid');
+            const selectedLocTitle = document.getElementById('selectedLocationTitle');
+            const noResults = document.getElementById('noResults');
+
+            pinsArea.innerHTML = '';
+            chipsContainer.innerHTML = '';
+            cardsGrid.innerHTML = '';
+
+            // Render location chips
+            locationsList.forEach(loc => {
+                const chip = document.createElement('button');
+                const isActive = currentLocation === loc;
+                chip.className = `px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${isActive ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'bg-cardBg border border-cardBorder text-gray-300 hover:bg-gray-800'}`;
+                chip.textContent = loc;
+                chip.addEventListener('click', () => {
+                    currentLocation = loc;
+                    renderMapAndCards();
+                });
+                chipsContainer.appendChild(chip);
+            });
+
+            selectedLocTitle.textContent = `Eventi per località: ${currentLocation}`;
+
+            // Render unique map pins based on major locations
+            const mapLocations = [
+                { name: "Roma", x: 52, y: 62 },
+                { name: "Milano", x: 38, y: 35 },
+                { name: "Costantinopoli", x: 88, y: 48 },
+                { name: "Torino", x: 30, y: 45 },
+                { name: "Venezia", x: 46, y: 36 },
+                { name: "Parigi (Francia)", x: 25, y: 30 },
+                { name: "Lepanto", x: 78, y: 75 }
+            ];
+
+            mapLocations.forEach(loc => {
+                const pin = document.createElement('button');
+                const isSelected = currentLocation === loc.name;
+                pin.className = `absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group transition-transform hover:scale-110`;
+                pin.style.left = `${loc.x}%`;
+                pin.style.top = `${loc.y}%`;
+
+                pin.innerHTML = `
+                    <div class="w-8 h-8 rounded-full ${isSelected ? 'bg-blue-500 ring-4 ring-blue-500/30' : 'bg-cardBg border-2 border-blue-500'} flex items-center justify-center text-white shadow-lg transition-colors">
+                        <span class="text-xs font-bold">📍</span>
+                    </div>
+                    <span class="mt-1 px-2 py-0.5 bg-cardBg/90 backdrop-blur-sm border border-cardBorder text-xs text-gray-200 font-medium rounded-md shadow-md whitespace-nowrap">
+                        ${loc.name}
+                    </span>
+                `;
+
+                pin.addEventListener('click', () => {
+                    currentLocation = loc.name;
+                    renderMapAndCards();
+                });
+
+                pinsArea.appendChild(pin);
+            });
+
+            // Filter and render location cards
+            const filtered = timelineData.filter(item => {
+                const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+                const matchesLocation = currentLocation === 'Tutti' || item.location.toLowerCase().includes(currentLocation.toLowerCase());
+                const matchesSearch = currentSearch === '' || 
+                    item.date.toLowerCase().includes(currentSearch) ||
+                    item.title.toLowerCase().includes(currentSearch) ||
+                    item.location.toLowerCase().includes(currentSearch) ||
+                    item.description.toLowerCase().includes(currentSearch);
+                return matchesCategory && matchesLocation && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                filtered.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-cardBg border border-cardBorder rounded-2xl overflow-hidden hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-900/20 transition-all duration-300 cursor-pointer flex flex-col';
+                    
+                    card.innerHTML = `
+                        <div class="h-40 w-full overflow-hidden bg-gray-900 relative">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/400x300/111827/3b82f6?text=Evento'">
+                            <span class="absolute top-3 left-3 px-3 py-1 bg-blue-600 text-white font-semibold text-xs rounded-full shadow-md">
+                                ${item.date}
+                            </span>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-2">
+                                    <span class="text-xs uppercase tracking-wider text-blue-400 font-medium">📍 ${item.location}</span>
+                                    <span class="text-xs text-gray-500">${getCategoryLabel(item.category)}</span>
+                                </div>
+                                <h4 class="text-lg font-bold text-white mb-2">${item.title}</h4>
+                                <p class="text-sm text-gray-300 line-clamp-2">${item.description}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    card.addEventListener('click', () => openModal(item));
+                    cardsGrid.appendChild(card);
+                });
+            }
+        }
+
+        function renderActiveView() {
+            if (currentView === 'timeline') {
+                document.getElementById('timelineViewContainer').classList.remove('hidden');
+                document.getElementById('mapViewContainer').classList.add('hidden');
+                renderTimeline();
+            } else {
+                document.getElementById('timelineViewContainer').classList.add('hidden');
+                document.getElementById('mapViewContainer').classList.remove('hidden');
+                renderMapAndCards();
+            }
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('eventModal');
+        const modalContent = document.getElementById('modalContent');
+        const closeModal = document.getElementById('closeModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        function openModal(item) {
+            document.getElementById('modalImage').src = item.image;
+            document.getElementById('modalDate').textContent = item.date;
+            document.getElementById('modalLocationBadge').textContent = `📍 ${item.location}`;
+            document.getElementById('modalCategory').textContent = getCategoryLabel(item.category);
+            document.getElementById('modalTitle').textContent = item.title;
+            document.getElementById('modalDescription').textContent = item.description;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModalHandler() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        closeModal.addEventListener('click', closeModalHandler);
+        closeModalBtn.addEventListener('click', closeModalHandler);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModalHandler(); });
+
+        // View switcher buttons
+        const btnTimelineView = document.getElementById('btnTimelineView');
+        const btnMapView = document.getElementById('btnMapView');
+
+        btnTimelineView.addEventListener('click', () => {
+            currentView = 'timeline';
+            btnTimelineView.className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white transition-all shadow-md';
+            btnMapView.className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all';
+            renderActiveView();
+        });
+
+        btnMapView.addEventListener('click', () => {
+            currentView = 'map';
+            btnMapView.className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white transition-all shadow-md';
+            btnTimelineView.className = 'flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all';
+            renderActiveView();
+        });
+
+        // Filter buttons logic
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => {
+                    b.classList.remove('bg-blue-600/20', 'text-blue-400', 'border-blue-500/30');
+                    b.classList.add('text-gray-300', 'hover:bg-gray-800/60', 'border-transparent');
+                });
+                btn.classList.remove('text-gray-300', 'hover:bg-gray-800/60', 'border-transparent');
+                btn.classList.add('bg-blue-600/20', 'text-blue-400', 'border-blue-500/30');
+
+                currentCategory = btn.getAttribute('data-category');
+                renderActiveView();
+            });
+        });
+
+        // Search input logic
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value.toLowerCase().trim();
+            renderActiveView();
+        });
+
+        // Initial load
+        window.onload = () => {
+            renderActiveView();
+        };
+    </script>
+</body>
+</html>
